@@ -26,48 +26,79 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+
 #ifndef EMULATED_THREADS_H_INCLUDED_
-#define EMULATED_THREADS_H_INCLUDED_
+    #define EMULATED_THREADS_H_INCLUDED_
 
-#include <time.h>
+    #include <time.h>
 
-#ifndef TIME_UTC
-#define TIME_UTC 1
-#endif
+    #ifndef TIME_UTC
+        #define TIME_UTC 1
 
-#include "c99_compat.h" /* for `inline` */
+    #endif
 
-/*---------------------------- types ----------------------------*/
-typedef void (*tss_dtor_t)(void*);
-typedef int (*thrd_start_t)(void*);
+    #ifndef inline
+        #ifdef __cplusplus
+            /* C++ supports inline keyword */
 
+        #elif defined(__GNUC__)
+            #define inline __inline__
 
-/*-------------------- enumeration constants --------------------*/
-enum {
-    mtx_plain     = 0,
-    mtx_try       = 1,
-    mtx_timed     = 2,
-    mtx_recursive = 4
-};
+        #elif defined(_MSC_VER)
+            #define inline __inline
 
-enum {
-    thrd_success = 0, // succeeded
-    thrd_timeout,     // timeout
-    thrd_error,       // failed
-    thrd_busy,        // resource busy
-    thrd_nomem        // out of memory
-};
+        #elif defined(__ICL)
+            #define inline __inline
 
-/*-------------------------- functions --------------------------*/
+        #elif defined(__INTEL_COMPILER)
+            /* Intel compiler supports inline keyword */
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#include "threads_win32.h"
-#elif defined(HAVE_PTHREAD)
-#include "threads_posix.h"
-#else
-#error Not supported on this platform.
-#endif
+        #elif defined(__WATCOMC__) && (__WATCOMC__ >= 1100)
+            #define inline __inline
+
+        #elif (__STDC_VERSION__ >= 199901L)
+            /* C99 supports inline keyword */
+
+        #else
+            #define inline
+
+        #endif
+
+    #endif
 
 
+    /*---------------------------- types ----------------------------*/
+    typedef void (*tss_dtor_t)(void*);
+    typedef int (*thrd_start_t)(void*);
+
+
+    /*-------------------- enumeration constants --------------------*/
+    enum {
+        mtx_plain     = 0,
+        mtx_try       = 1,
+        mtx_timed     = 2,
+        mtx_recursive = 4
+    };
+
+    enum {
+        thrd_success = 0, // succeeded
+        thrd_timeout,     // timeout
+        thrd_error,       // failed
+        thrd_busy,        // resource busy
+        thrd_nomem        // out of memory
+    };
+
+
+    /*-------------------------- functions --------------------------*/
+    #if defined(_WIN32) && !defined(__CYGWIN__)
+        #include "threads_win32.h"
+
+    #elif defined(HAVE_PTHREAD)
+        #include "threads_posix.h"
+
+    #else
+        #error "threads.h: Platform not supported."
+
+    #endif
 
 #endif /* EMULATED_THREADS_H_INCLUDED_ */

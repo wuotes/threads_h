@@ -264,7 +264,7 @@ static inline void cnd_destroy(cnd_t* cond)
 {
     assert(cond != NULL);
 
-    // do nothing
+    (void*)cond; /* to suppress unreferenced parameter warnings */
 }
 
 static inline int cnd_init(cnd_t* cond)
@@ -520,6 +520,8 @@ static inline void thrd_sleep(const struct timespec* time_point, struct timespec
 {
     assert(time_point);
     assert(!remaining); /* not implemented */
+
+    (void*)remaining; /* to suppress unreferenced parameter warnings */
 
     Sleep((DWORD)impl_timespec2msec(time_point));
 }
